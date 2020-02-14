@@ -17,7 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    private WordViewModel mWordViewModel;
+    private TaskukirjaViewModel mTaskukirjaViewModel;
 
     public static final int NEW_WORD_ACTIVITY_REQUEST_CODE = 1;
     @Override
@@ -27,17 +27,17 @@ public class MainActivity extends AppCompatActivity {
 
 
         RecyclerView recyclerView = findViewById(R.id.recyclerview);
-        final WordListAdapter adapter = new WordListAdapter(this);
+        final TaskukirjaListAdapter adapter = new TaskukirjaListAdapter(this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        mWordViewModel = new ViewModelProvider(this).get(WordViewModel.class);
+        mTaskukirjaViewModel = new ViewModelProvider(this).get(TaskukirjaViewModel.class);
 
-        mWordViewModel.getAllWords().observe(this, new Observer<List<Word>>() {
+        mTaskukirjaViewModel.getKaikkiTaskukirjat().observe(this, new Observer<List<Taskukirja>>() {
             @Override
-            public void onChanged(@Nullable final List<Word> words) {
+            public void onChanged(@Nullable final List<Taskukirja> taskukirjat) {
                 // Update the cached copy of the words in the adapter.
-                adapter.setWords(words);
+                adapter.setTaskukirjat(taskukirjat);
             }
         });
 
@@ -57,8 +57,13 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            Word word = new Word(data.getStringExtra(NewWordActivity.EXTRA_REPLY));
-            mWordViewModel.insert(word);
+            String arvot=data.getStringExtra(NewWordActivity.EXTRA_REPLY);
+            String[] osa=arvot.split(";");
+            int numero=Integer.parseInt(osa[0]);
+
+            Taskukirja taskukirja=new Taskukirja(numero, osa[1]);
+            //Log.d(LOG,taskukirja.toString());
+            mTaskukirjaViewModel.insert(taskukirja);
         } else {
             Toast.makeText(
                     getApplicationContext(),

@@ -11,23 +11,23 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {Word.class}, version = 1, exportSchema = false)
-public abstract class WordRoomDatabase extends RoomDatabase {
+@Database(entities = {Taskukirja.class}, version = 1, exportSchema = false)
+public abstract class TaskukirjaRoomDatabase extends RoomDatabase {
 
-    public abstract WordDao wordDao();
+    public abstract TaskukirjaDao taskukirjaDao();
 
-    private static volatile WordRoomDatabase INSTANCE;
+    private static volatile TaskukirjaRoomDatabase INSTANCE;
     private static final int NUMBER_OF_THREADS = 4;
     static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-    static WordRoomDatabase getDatabase(final Context context) {
+    static TaskukirjaRoomDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
-            synchronized (WordRoomDatabase.class) {
+            synchronized (TaskukirjaRoomDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            WordRoomDatabase.class, "word_database")
-                            //.addCallback(sRoomDatabaseCallback)//Testi datan luomiseen tarvitaan
+                            TaskukirjaRoomDatabase.class, "taskukirja_database")
+                            .addCallback(sRoomDatabaseCallback)//Testi datan luomiseen tarvitaan
                             .build();
                 }
             }
@@ -48,13 +48,12 @@ public abstract class WordRoomDatabase extends RoomDatabase {
             databaseWriteExecutor.execute(() -> {
                 // Populate the database in the background.
                 // If you want to start with more words, just add them.
-                WordDao dao = INSTANCE.wordDao();
+                TaskukirjaDao dao = INSTANCE.taskukirjaDao();
                 dao.deleteAll();
 
-                Word word = new Word("Hello");
-                dao.insert(word);
-                word = new Word("World");
-                dao.insert(word);
+                Taskukirja aku=new Taskukirja(1, "Mikki kiipelissä");
+                dao.insert(aku);
+
             });
         }
     };
